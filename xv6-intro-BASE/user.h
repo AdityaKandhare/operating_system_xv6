@@ -23,7 +23,10 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
-void shutdown(void);
+int shutdown(void);
+int get_syscall_count(int);
+int reset_syscall_count(void);
+
 
 // ulib.c
 int stat(char*, struct stat*);
