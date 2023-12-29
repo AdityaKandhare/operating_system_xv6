@@ -6,24 +6,30 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "proc.h"
+#include "syscall.h"
 
-int
-sys_fork(void)
+// defined count variables for fork, exit and wait
+int fork_syscall_count = 0;
+int exit_syscall_count = 0;
+int wait_syscall_count = 0;
+
+int sys_fork(void)
 {
-  return fork();
+    fork_syscall_count++;   // incrementing the count
+    return fork();
 }
 
-int
-sys_exit(void)
+int sys_exit(void)
 {
-  exit();
-  return 0;  // not reached
+    exit_syscall_count++;  // incrementing the count
+    exit();
+    return 0;  // not reached
 }
 
-int
-sys_wait(void)
+int sys_wait(void)
 {
-  return wait();
+    wait_syscall_count++;   // incrementing the count
+    return wait();
 }
 
 int
@@ -89,6 +95,7 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
 int sys_shutdown(void)
 {
   /* Either of the following will work. Does not harm to put them together. */
@@ -98,3 +105,22 @@ int sys_shutdown(void)
   return 0;
   
 }
+
+// sys_get_syscall_count() to get the syscall count
+int sys_get_syscall_count(void)
+{
+  int n;
+  argint(0, &n);
+  if(n == (0)) return fork_syscall_count;
+  if(n == (1)) return wait_syscall_count;
+  if(n == (2)) return exit_syscall_count;
+  return -1; // Invalid syscall type
+}
+
+// reset the syscall count
+int sys_reset_syscall_count(void)
+{
+    fork_syscall_count = wait_syscall_count = exit_syscall_count =0;
+    return 0; // Placeholder return value
+}
+
